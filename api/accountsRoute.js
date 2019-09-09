@@ -24,7 +24,20 @@ router.get('/:id', (req, res) => {
 })
 
 // @@@@@@@@@@ POST request @@@@@@@@@@
-// router.post()
+router.post('/', (req, res) => {
+    const newAcc = req.body
+
+    db('accounts')
+    .insert(newAcc, 'id')
+    .then(([id]) => {
+        db('accounts')
+        .where({ id })
+        .first()
+        .then(account => res.json(account))
+        .catch(err => res.status(500).json(err))
+    })
+    .catch(err => res.status(500).json(err))
+})
 
 // @@@@@@@@@@ DELETE request @@@@@@@@@@
 // router.delete()
