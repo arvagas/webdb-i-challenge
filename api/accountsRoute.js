@@ -31,11 +31,19 @@ function validateAccObj(req, res, next) {
 router.get('/', (req, res) => {
     const queryStr = req.body
 
-    db('accounts')
-    .orderBy(queryStr.sortby, queryStr.sortdir)
-    .limit(queryStr.limit)
-    .then(accounts => res.json(accounts))
-    .catch(err => res.status(500).json(err))
+    if (Object.getOwnPropertyNames(queryStr).length === 0) {
+        db('accounts')
+        .then(accounts => res.json(accounts))
+        .catch(err => res.status(500).json(err))
+    } 
+    else if (!queryStr.sortby && queryStr.sortdir ) res.status(400).json({ message: "missing required sortby field" })
+    else {
+        db('accounts')
+        .orderBy(queryStr.sortby, queryStr.sortdir)
+        .limit(queryStr.limit)
+        .then(accounts => res.json(accounts))
+        .catch(err => res.status(500).json(err))
+    }
 })
 
 //Get specific accounts
