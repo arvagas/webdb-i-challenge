@@ -40,7 +40,21 @@ router.post('/', (req, res) => {
 })
 
 // @@@@@@@@@@ DELETE request @@@@@@@@@@
-// router.delete()
+router.delete('/:id', (req, res) => {
+    const { id } = req.params
+
+    db('accounts')
+    .where({ id })
+    .first()
+    .then(remAccount => {
+        db('accounts')
+        .where({ id })
+        .del()
+        .then(acc => res.json(remAccount))
+        .catch(err => res.status(500).json(err))
+    })
+    .catch(err => res.status(500).json(err))
+})
 
 // @@@@@@@@@@ PUT request @@@@@@@@@@
 // router.put()
