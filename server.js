@@ -15,7 +15,7 @@ function logger(req, res, next) {
 server.use(logger)
 
 // Route handling
-server.use('/accounts', accountsRoute)
+server.use('/api/accounts', accountsRoute)
 
 // Hello World test
 server.get('/', (req, res) => {
