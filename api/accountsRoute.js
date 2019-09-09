@@ -4,6 +4,28 @@ const router = express.Router()
 
 const db = require('../data/dbConfig.js')
 
+// @@@@@@@@@@ Custom Middleware @@@@@@@@@@
+function validateAccId(req, res, next) {
+    const { id } = req.params
+
+    db('accounts')
+    .where({ id })
+    .first()
+    .then(account => {
+        if (account) next()
+        else res.status(404).json({ message: "invalid account id" })
+    })
+    .catch(err => res.status(500).json(err))
+}
+
+function validateAccObj(req, res, next) {
+    const accObj = req.body
+
+    if (!accObj) res.status(400).json({ message: "missing body request" })
+    else if (!accObj.name || !accObj.budget) res.status(400).json({ message: "missing required name or budget field" })
+    else if (accObj && accObj.name && accObj.budget) next()
+}
+
 // @@@@@@@@@@ GET requests @@@@@@@@@@
 // Get all accounts
 router.get('/', (req, res) => {
@@ -13,7 +35,7 @@ router.get('/', (req, res) => {
 })
 
 //Get specific accounts
-router.get('/:id', (req, res) => {
+router.get('/:id', validateAccId, (req, res) => {
     const { id } = req.params
 
     db('accounts')
@@ -24,7 +46,7 @@ router.get('/:id', (req, res) => {
 })
 
 // @@@@@@@@@@ POST request @@@@@@@@@@
-router.post('/', (req, res) => {
+router.post('/', validateAccObj, (req, res) => {
     const newAcc = req.body
 
     db('accounts')
@@ -40,7 +62,7 @@ router.post('/', (req, res) => {
 })
 
 // @@@@@@@@@@ DELETE request @@@@@@@@@@
-router.delete('/:id', (req, res) => {
+router.delete('/:id', validateAccId, (req, res) => {
     const { id } = req.params
 
     db('accounts')
@@ -57,7 +79,7 @@ router.delete('/:id', (req, res) => {
 })
 
 // @@@@@@@@@@ PUT request @@@@@@@@@@
-router.put('/:id', (req, res) => {
+router.put('/:id', validateAccId, validateAccObj, (req, res) => {
     const { id } = req.params
     const changes = req.body
 
