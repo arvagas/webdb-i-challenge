@@ -50,13 +50,22 @@ router.delete('/:id', (req, res) => {
         db('accounts')
         .where({ id })
         .del()
-        .then(acc => res.json(remAccount))
+        .then(count => res.json(remAccount))
         .catch(err => res.status(500).json(err))
     })
     .catch(err => res.status(500).json(err))
 })
 
 // @@@@@@@@@@ PUT request @@@@@@@@@@
-// router.put()
+router.put('/:id', (req, res) => {
+    const { id } = req.params
+    const changes = req.body
+
+    db('accounts')
+    .where({ id })
+    .update(changes)
+    .then(count => res.json({ id: id, ...changes }))
+    .catch(err => res.status(500).json(err))
+})
 
 module.exports = router
