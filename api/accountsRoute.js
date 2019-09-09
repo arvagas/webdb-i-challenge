@@ -29,7 +29,11 @@ function validateAccObj(req, res, next) {
 // @@@@@@@@@@ GET requests @@@@@@@@@@
 // Get all accounts
 router.get('/', (req, res) => {
+    const queryStr = req.body
+
     db('accounts')
+    .orderBy(queryStr.sortby, queryStr.sortdir)
+    .limit(queryStr.limit)
     .then(accounts => res.json(accounts))
     .catch(err => res.status(500).json(err))
 })
