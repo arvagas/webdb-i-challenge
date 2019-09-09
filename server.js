@@ -1,9 +1,8 @@
 const express = require('express')
 
-const db = require('./data/dbConfig.js')
+const accountsRoute = require('./api/accountsRoute')
 
 const server = express()
-
 server.use(express.json())
 
 function logger(req, res, next) {
@@ -12,10 +11,15 @@ function logger(req, res, next) {
     next()
 }
 
+// @@@@@@@@@@ Global Middleware @@@@@@@@@@
 server.use(logger)
 
+// Route handling
+server.use('/accounts', accountsRoute)
+
+// Hello World test
 server.get('/', (req, res) => {
-    res.json('Hello World')
+    res.json('Hello World from webdb-i-challenge')
 })
 
 module.exports = server
