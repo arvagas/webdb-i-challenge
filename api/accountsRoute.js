@@ -26,18 +26,32 @@ function validateAccObj(req, res, next) {
     else if (accObj && accObj.name && accObj.budget) next()
 }
 
+function validateQueryStr(req, res, next) {
+    const queryStr = req.body
+
+    if (Object.getOwnPropertyNames(queryStr).length === 0) next()
+    else if (queryStr.hasOwnProperty('limit') || queryStr.hasOwnProperty('sortby') || queryStr.hasOwnProperty('sortdir')) {
+        if (!queryStr.sortby && queryStr.sortdir) res.status(400).json({ message: "missing required sortby field" })
+        else next()
+    }
+    else res.status(500).json({ message: "object does not contain valid property types" })
+}
+
 // @@@@@@@@@@ GET requests @@@@@@@@@@
 // Get all accounts
-router.get('/', (req, res) => {
+router.get('/', validateQueryStr, (req, res) => {
     const queryStr = req.body
 
     if (Object.getOwnPropertyNames(queryStr).length === 0) {
         db('accounts')
         .then(accounts => res.json(accounts))
         .catch(err => res.status(500).json(err))
-    } 
-    else if (!queryStr.sortby && queryStr.sortdir ) res.status(400).json({ message: "missing required sortby field" })
-    else {
+    } else if (!queryStr.sortby) {
+        db('accounts')
+        .limit(queryStr.limit)
+        .then(accounts => res.json(accounts))
+        .catch(err => res.status(500).json(err))
+    } else {
         db('accounts')
         .orderBy(queryStr.sortby, queryStr.sortdir)
         .limit(queryStr.limit)
