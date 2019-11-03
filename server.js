@@ -1,9 +1,25 @@
-const express = require('express');
+const express = require('express')
 
-const db = require('./data/dbConfig.js');
+const accountsRoute = require('./api/accountsRoute')
 
-const server = express();
+const server = express()
+server.use(express.json())
 
-server.use(express.json());
+function logger(req, res, next) {
+    console.log(`[${new Date().toISOString()}] ${req.method} to ${req.url}`)
 
-module.exports = server;
+    next()
+}
+
+// @@@@@@@@@@ Global Middleware @@@@@@@@@@
+server.use(logger)
+
+// Route handling
+server.use('/api/accounts', accountsRoute)
+
+// Hello World test
+server.get('/', (req, res) => {
+    res.json('Hello World from webdb-i-challenge')
+})
+
+module.exports = server
